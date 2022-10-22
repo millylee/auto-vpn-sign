@@ -1,0 +1,21 @@
+name: Auto
+
+on:
+  schedule:
+    - cron: "30 16 * * *" # 北京时间上午00:30
+  workflow_dispatch:
+
+env:
+  EMAIL: ${{ secrets.EMAIL }}
+  PASSWORD: ${{ secrets.PASSWORD }}
+
+jobs:
+  CheckIn:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - name: Run Project
+        run: |
+          npm i
+          npm start
