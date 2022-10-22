@@ -17,9 +17,9 @@ const puppeteer = require('puppeteer');
   console.log('填写邮箱与密码并进行登录');
 
   console.time('AutoSign');
-  const signSelector = await page.$('.breadcrumb-item > a');
+  const signSelector = await page.$('#checkin-div > a');
   if (signSelector) {
-    await page.click('.breadcrumb-item > a');
+    await page.click(signSelector);
   }
   console.timeEnd('AutoSign');
   console.log('签到完成');
