@@ -22,7 +22,7 @@ const puppeteer = require('puppeteer');
     await page.click('.breadcrumb-item > a');
   }
   console.timeEnd('AutoSign');
-  console.log('点击签到');
+  console.log('签到完成');
 
   await browser.close();
 })();
