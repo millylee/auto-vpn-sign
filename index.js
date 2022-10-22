@@ -1,3 +1,4 @@
+const env = process.env || {};
 const puppeteer = require('puppeteer');
 
 (async () => {
@@ -9,8 +10,8 @@ const puppeteer = require('puppeteer');
   console.timeEnd('OpenLoginPage');
   console.time('AutoLogin');
 
-  await page.type('#email', 'millyleecn@gmail.com');
-  await page.type('#password', 'm7g3haGb');
+  await page.type('#email', env?.EMAIL || '');
+  await page.type('#password', env?.PASSWORD || '');
   await page.click('.login');
   console.timeEnd('AutoLogin');
   console.log('填写邮箱与密码并进行登录');
