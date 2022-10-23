@@ -2,27 +2,41 @@ const env = process.env || {};
 const puppeteer = require('puppeteer');
 
 (async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
+  const browser = await puppeteer.launch({ headless: false });
+  // 标签页变化
+  browser.on('targetchanged', async target => {
+    const newPage = await target.page();
+    // url变化
+    newPage.on('framenavigated', async () => {
+      await newPage.waitForSelector('.breadcrumb-item > .btn');
+      if (newPage.url().indexOf('/user')) {
+        // TODO: newPage.click() 适配方法
+        await newPage.evaluate(() => {
+          document.querySelector('.breadcrumb-item > .btn').click();
+        });
+        console.log('签到完成');
+        await browser.close();
+      }
+    });
+  });
+  try {
+    console.time('OpenLoginPage');
+    const page = await browser.newPage();
+    await page.goto('https://www.hjtnt.link/auth/login');
+    console.timeEnd('OpenLoginPage');
+    console.time('AutoLogin');
 
-  console.time('OpenLoginPage');
-  await page.goto('https://www.hjtnt.link/auth/login');
-  console.timeEnd('OpenLoginPage');
-  console.time('AutoLogin');
+    await page.type('#email', env?.EMAIL || '');
+    await page.type('#password', env?.PASSWORD || '');
 
-  await page.type('#email', env?.EMAIL || '');
-  await page.type('#password', env?.PASSWORD || '');
-  await page.click('.login');
-  console.timeEnd('AutoLogin');
-  console.log('填写邮箱与密码并进行登录');
-
-  console.time('AutoSign');
-  const signSelector = await page.$('#checkin-div > a');
-  if (signSelector) {
-    await page.click(signSelector);
+    const [response] = await Promise.all([
+      page.waitForNavigation(),
+      page.click('.login'),
+    ]);
+    await response;
+    console.log('填写邮箱与密码并进行登录');
+  } catch (error) {
+    console.log('签到出错', error);
+    await browser.close();
   }
-  console.timeEnd('AutoSign');
-  console.log('签到完成');
-
-  await browser.close();
 })();
