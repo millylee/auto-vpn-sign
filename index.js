@@ -40,3 +40,7 @@ const puppeteer = require('puppeteer');
     await browser.close();
   }
 })();
+
+process.on('exit', (error) => {
+  console.log('异常退出：' + error)
+});
