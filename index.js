@@ -2,7 +2,7 @@ const env = process.env || {};
 const puppeteer = require('puppeteer');
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch();
   // 标签页变化
   browser.on('targetchanged', async target => {
     const newPage = await target.page();
