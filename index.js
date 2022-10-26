@@ -7,7 +7,7 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch({
     // args: ['--no-sandbox'],
     // headless: env.NODE_ENV === 'development' ? false : true,
-    headless: true,
+    headless: false,
   });
   const page = await browser.newPage();
 
@@ -29,6 +29,7 @@ const puppeteer = require('puppeteer');
       await newPage.goto('https://www.hjtnt.link/user');
       await newPage.waitForSelector('.breadcrumb-item > .btn');
       // TODO：newPage.click() 不能执行
+      // 不能在无头模式中使用
       const ret = await newPage.evaluate(() => {
         const selector = document.querySelector('.breadcrumb-item > .btn');
         if (selector) {
@@ -44,7 +45,7 @@ const puppeteer = require('puppeteer');
         }
       });
       console.log('[Sign] %s', ret);
-      await browser.close();
+      // await browser.close();
       console.timeEnd('AutoSign');
     }
   });
