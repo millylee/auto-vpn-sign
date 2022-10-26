@@ -4,7 +4,7 @@ const puppeteer = require('puppeteer');
 
 (async () => {
   console.time('AutoSign');
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto("https://www.hjtnt.link/auth/login");
   await page.type('#email', env?.EMAIL || '');
