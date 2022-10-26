@@ -1,3 +1,4 @@
 node_modules
 *.ini
 *-lock.json
+.env
