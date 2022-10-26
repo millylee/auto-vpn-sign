@@ -10,6 +10,7 @@ const puppeteer = require('puppeteer');
   await page.type('#email', env?.EMAIL || '');
   await page.type('#password', env?.PASSWORD || '');
   await page.click('.login');
+  console.log('[Sign] %s', '登录成功')
   const targets = await browser.targets();
   targets.map(async target => {
     const pageUrl = await target.url();
@@ -39,9 +40,3 @@ const puppeteer = require('puppeteer');
     }
   });
 })();
-
-process.on('exit', (code) => {
-  if (code !== 0) {
-    console.log('异常退出：' + code)
-  }
-});
