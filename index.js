@@ -45,7 +45,7 @@ const puppeteer = require('puppeteer');
         }
       });
       console.log('[Sign] %s', ret);
-      // await browser.close();
+      await browser.close();
       console.timeEnd('AutoSign');
     }
   });
