@@ -12,7 +12,7 @@ const puppeteer = require('puppeteer');
   const page = await browser.newPage();
 
   console.log('[Sign] %s', '准备登录')
-  await page.goto("https://www.hjtnt.link/auth/login");
+  await page.goto("https://www.hjtnt.co/auth/login");
   await page.type('#email', env?.EMAIL || '');
   await page.type('#password', env?.PASSWORD || '');
   await page.click('.login');
@@ -26,7 +26,7 @@ const puppeteer = require('puppeteer');
     if (pageUrl.indexOf('oauth.telegram.org/embed/') > -1) {
       const newBrowser = await target.browser();
       const newPage = await newBrowser.newPage();
-      await newPage.goto('https://www.hjtnt.link/user');
+      await newPage.goto('https://www.hjtnt.co/user');
       await newPage.waitForSelector('.breadcrumb-item > .btn');
       // TODO：newPage.click() 不能执行
       // 不能在无头模式中使用
