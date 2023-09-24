@@ -11,13 +11,24 @@ const puppeteer = require('puppeteer');
   });
   const page = await browser.newPage();
 
-  console.log('[Sign] %s', '准备登录')
-  await page.goto("https://www.hjtnt.co/auth/login");
-  await page.type('#email', env?.EMAIL || '');
-  await page.type('#password', env?.PASSWORD || '');
-  await page.click('.login');
+  const navigationPromise = page.waitForNavigation({
+    // 超时时间，单位毫秒
+    timeout: 120000,
+    waitUntil: "domcontentloaded"
+  });
 
+  try {
+    console.log('[Sign] %s', '准备登录');
+    await page.goto("https://www.hjtnt.co/auth/login");
+    await navigationPromise;
+    await page.type('#email', env?.EMAIL || '');
+    await page.type('#password', env?.PASSWORD || '');
+    await page.click('.login');
   console.log('[Sign] %s', '登录成功');
+  } catch (error) {
+    console.error(`页面加载超时或出错: ${error}`);
+    await browser.close();
+  }
 
   const targets = await browser.targets();
   targets.map(async target => {
