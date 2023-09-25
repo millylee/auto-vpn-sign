@@ -19,14 +19,14 @@ const puppeteer = require('puppeteer');
 
   try {
     console.log('[Sign] %s', '准备登录');
-    await page.goto("https://www.hjtnt.co/auth/login");
+    await page.goto(env?.SITE_URL + '/auth/login');
     await navigationPromise;
     await page.type('#email', env?.EMAIL || '');
     await page.type('#password', env?.PASSWORD || '');
     await page.click('.login');
   console.log('[Sign] %s', '登录成功');
   } catch (error) {
-    console.error(`页面加载超时或出错: ${error}`);
+    console.error('[Sign] %s', error?.message || '未知错误');
     await browser.close();
   }
 
