@@ -37,7 +37,7 @@ const puppeteer = require('puppeteer');
     if (pageUrl.indexOf('oauth.telegram.org/embed/') > -1) {
       const newBrowser = await target.browser();
       const newPage = await newBrowser.newPage();
-      await newPage.goto('https://www.hjtnt.co/user');
+      await newPage.goto(env?.SITE_URL + '/user');
       await newPage.waitForSelector('.breadcrumb-item > .btn');
       // TODO：newPage.click() 不能执行
       // 不能在无头模式中使用
