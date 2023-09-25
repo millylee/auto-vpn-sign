@@ -8,6 +8,7 @@ on:
 env:
   EMAIL: ${{ secrets.EMAIL }}
   PASSWORD: ${{ secrets.PASSWORD }}
+  SITE_URL: ${{ secrets.SITE_URL }}
 
 jobs:
   Sign:
