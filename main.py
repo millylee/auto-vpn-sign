@@ -38,13 +38,11 @@ try:
   print('[CheckIn] {} {}'.format('签到结果', content))
 
   if pushPlusToken != '':
-    postData = json.loads(pushPlusData)
-    postData['content'] = content
-    requests.post(url=pushPlusUrl, data=json.dumps(postData))
+    pushPlusData['content'] = content
+    requests.post(url=pushPlusUrl, data=json.dumps(pushPlusData))
     print('[CheckIn] {}'.format('推送成功'))
 except Exception as e:
-  print('[CheckIn] {} {}'.format('签到失败', e))
+  print('[CheckIn] {} {}'.format('捕获异常', e))
   if pushPlusToken != '':
-    postData = json.loads(pushPlusData)
-    postData['content'] = e
-    requests.post(url=pushPlusUrl, data=json.dumps(postData))
+    pushPlusData['content'] = e
+    requests.post(url=pushPlusUrl, data=json.dumps(pushPlusData))
