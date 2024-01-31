@@ -1,8 +1,8 @@
-name: Auto
+name: CheckIn
 
 on:
   schedule:
-    - cron: "01 * * * *"
+    - cron: "0 17 * * *"
   workflow_dispatch:
 
 env:
@@ -11,17 +11,18 @@ env:
   SITE_URL: ${{ secrets.SITE_URL }}
 
 jobs:
-  Sign:
-    runs-on: windows-latest
-    timeout-minutes: 30
+  build:
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - name: Use Python
+        uses: actions/setup-python@v5
         with:
-          node-version: '14.15.1'
+          python-version: 3.9
+          cache: 'pip'
       - name: Run Project
         run: |
-          npm i
-          npm start
+          pip install -r requirements.txt
+          python ./main.py
       - uses: gautamkrishnar/keepalive-workflow@master
