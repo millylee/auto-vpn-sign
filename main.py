@@ -28,7 +28,7 @@ data = {
 }
 
 try:
-  print('[CheckIn] {} {}'.format('准备登录'))
+  print('[CheckIn] {}'.format('准备登录'))
 
   response = json.loads(session.post(url=loginUrl,headers=header,data=data).text)
   print('[CheckIn] {} {}'.format('请求数据', response['msg']))
