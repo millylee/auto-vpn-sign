@@ -9,6 +9,7 @@ env:
   EMAIL: ${{ secrets.EMAIL }}
   PASSWORD: ${{ secrets.PASSWORD }}
   SITE_URL: ${{ secrets.SITE_URL }}
+  PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
 
 jobs:
   build:
