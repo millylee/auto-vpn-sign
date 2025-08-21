@@ -3,8 +3,49 @@ import json
 import os
 from typing import List, Dict, Any
 from dotenv import load_dotenv
+from notify import notify
 
 load_dotenv()
+
+
+def mask_sensitive_info(text: str) -> str:
+    """脱敏敏感信息，保留首尾，隐藏中间"""
+    if not text:
+        return text
+    
+    if len(text) <= 2:
+        return text  # 太短不脱敏
+    elif len(text) == 3:
+        return text[0] + "*" + text[-1]  # 3字符：首*尾
+    elif len(text) <= 6:
+        return text[:2] + "*" * (len(text) - 4) + text[-2:]  # 短字符串：保留前后2位
+    else:
+        # 长字符串：保留前后3位
+        middle_len = len(text) - 6
+        return text[:3] + "*" * middle_len + text[-3:]
+
+
+def format_account_display(email: str, site_url: str) -> str:
+    """格式化账号显示，进行脱敏处理"""
+    # 处理邮箱
+    if "@" in email:
+        username, domain = email.split("@", 1)
+        masked_username = mask_sensitive_info(username)
+        masked_email = f"{masked_username}@{domain}"
+    else:
+        masked_email = mask_sensitive_info(email)
+    
+    # 处理网址
+    if site_url.startswith("http"):
+        from urllib.parse import urlparse
+        parsed = urlparse(site_url)
+        domain = parsed.netloc
+        masked_domain = mask_sensitive_info(domain)
+        masked_url = masked_domain
+    else:
+        masked_url = mask_sensitive_info(site_url)
+    
+    return f"{masked_email}-->{masked_url}"
 
 
 def get_accounts_config() -> List[Dict[str, str]]:
@@ -66,27 +107,30 @@ def checkin_single_account(account: Dict[str, str]) -> Dict[str, Any]:
         "error": None,
     }
 
+    # 获取脱敏后的显示格式
+    display_id = format_account_display(email, site_url)
+    
     try:
-        print(f"[CheckIn] [{email}@{site_url}] 准备登录")
+        print(f"[CheckIn] [{display_id}] 准备登录")
 
         with httpx.Client(headers=headers, http2=True) as client:
             # 登录
             response = client.post(login_url, data=login_data)
             login_result = response.json()
-            print(f"[CheckIn] [{email}@{site_url}] 登录结果: {login_result['msg']}")
+            print(f"[CheckIn] [{display_id}] 登录结果: {login_result['msg']}")
 
             # 签到
             checkin_response = client.post(checkin_url)
             checkin_result = checkin_response.json()
             message = checkin_result["msg"]
-            print(f"[CheckIn] [{email}@{site_url}] 签到结果: {message}")
+            print(f"[CheckIn] [{display_id}] 签到结果: {message}")
 
             result["success"] = True
             result["message"] = message
 
     except Exception as e:
         error_msg = str(e)
-        print(f"[CheckIn] [{email}@{site_url}] 捕获异常: {error_msg}")
+        print(f"[CheckIn] [{display_id}] 捕获异常: {error_msg}")
         result["error"] = error_msg
         result["message"] = f"签到失败: {error_msg}"
 
@@ -95,12 +139,11 @@ def checkin_single_account(account: Dict[str, str]) -> Dict[str, Any]:
 
 def send_push_notification(results: List[Dict[str, Any]]):
     """发送推送通知"""
-    push_plus_token = os.getenv("PUSHPLUS_TOKEN")
-    if not push_plus_token:
+    if not results:
         return
 
     # 构建推送内容
-    content_lines = ["📊 自动签到结果汇总\n"]
+    content_lines = ["📊 自动签到结果汇总", ""]
     success_count = 0
     total_count = len(results)
 
@@ -110,31 +153,27 @@ def send_push_notification(results: List[Dict[str, Any]]):
         success = result["success"]
         message = result["message"]
 
+        # 获取脱敏后的显示格式
+        display_id = format_account_display(email, site_url)
+
         if success:
             success_count += 1
             status_icon = "✅"
         else:
             status_icon = "❌"
 
-        content_lines.append(f"{status_icon} {email}@{site_url}")
-        content_lines.append(f"   {message}\n")
+        content_lines.append(f"{status_icon} {display_id}")
+        content_lines.append(f"   {message}")
+        content_lines.append("")
 
     content_lines.append(f"📈 成功率: {success_count}/{total_count}")
+    
+    title = f"签到领流量 ({success_count}/{total_count})"
     content = "\n".join(content_lines)
 
-    push_plus_data = {
-        "token": push_plus_token,
-        "title": f"签到领流量 ({success_count}/{total_count})",
-        "content": content,
-        "template": "txt",
-        "channel": "wechat",
-    }
-
     try:
-        push_plus_url = "http://www.pushplus.plus/send"
-        with httpx.Client() as client:
-            client.post(push_plus_url, data=json.dumps(push_plus_data))
-        print("[CheckIn] 推送成功")
+        notify.push_message(title, content, 'text')
+        print("[CheckIn] 推送完成")
     except Exception as e:
         print(f"[CheckIn] 推送失败: {e}")
 
@@ -159,9 +198,6 @@ def main():
 
     # 发送推送通知
     send_push_notification(results)
-
-    print("[CheckIn] 所有账号签到完成")
-
 
 if __name__ == "__main__":
     main()
