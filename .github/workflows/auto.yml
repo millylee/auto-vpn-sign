@@ -6,10 +6,15 @@ on:
   workflow_dispatch:
 
 env:
-  EMAIL: ${{ secrets.EMAIL }}
-  PASSWORD: ${{ secrets.PASSWORD }}
-  SITE_URL: ${{ secrets.SITE_URL }}
+  ACCOUNTS: ${{ secrets.ACCOUNTS }}
+  DINGDING_WEBHOOK: ${{ secrets.DINGDING_WEBHOOK }}
+  EMAIL_USER: ${{ secrets.EMAIL_USER }}
+  EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+  EMAIL_TO: ${{ secrets.EMAIL_TO }}
   PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+  SERVERPUSHKEY: ${{ secrets.SERVERPUSHKEY }}
+  FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+  WEIXIN_WEBHOOK: ${{ secrets.WEIXIN_WEBHOOK }}
 
 jobs:
   CheckIn:
@@ -17,13 +22,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Use Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
         with:
-          python-version: 3.9
+          version: "latest"
+      - name: Set up Python
+        run: uv python install 3.12
+      - name: Install dependencies
+        run: uv sync
       - name: Run Project
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          python ./main.py
+        run: uv run python main.py
       - uses: gautamkrishnar/keepalive-workflow@master

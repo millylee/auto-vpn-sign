@@ -1,0 +1,12 @@
+[project]
+name = "auto-vpn-sign"
+version = "1.0.0"
+description = "自动签到领取流量工具"
+requires-python = ">=3.8"
+dependencies = [
+    "httpx[http2]>=0.28.1",
+    "python-dotenv>=1.0.1",
+]
+
+[tool.uv]
+dev-dependencies = []
