@@ -6,9 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  EMAIL: ${{ secrets.EMAIL }}
-  PASSWORD: ${{ secrets.PASSWORD }}
-  SITE_URL: ${{ secrets.SITE_URL }}
+  ACCOUNTS: ${{ secrets.ACCOUNTS }}
   PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
 
 jobs:
@@ -17,13 +15,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Use Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
         with:
-          python-version: 3.9
+          version: "latest"
+      - name: Set up Python
+        run: uv python install 3.12
+      - name: Install dependencies
+        run: uv sync
       - name: Run Project
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          python ./main.py
+        run: uv run python main.py
       - uses: gautamkrishnar/keepalive-workflow@master
