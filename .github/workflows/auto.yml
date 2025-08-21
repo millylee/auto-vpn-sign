@@ -32,4 +32,3 @@ jobs:
         run: uv sync
       - name: Run Project
         run: uv run python main.py
-      - uses: gautamkrishnar/keepalive-workflow@master
