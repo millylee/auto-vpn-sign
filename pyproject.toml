@@ -2,19 +2,11 @@
 name = "auto-vpn-sign"
 version = "1.0.0"
 description = "自动签到领取流量工具"
-authors = [{name = "auto-vpn-sign"}]
 requires-python = ">=3.8"
 dependencies = [
-    "requests>=2.32.2",
+    "httpx[http2]>=0.28.1",
+    "python-dotenv>=1.0.1",
 ]
-readme = "README.md"
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
 
 [tool.uv]
 dev-dependencies = []
-
-[project.scripts]
-auto-vpn-sign = "main:main"

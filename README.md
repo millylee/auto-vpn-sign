@@ -10,7 +10,7 @@
 # 安装依赖
 uv sync
 
-# 运行
+# 本地运行
 uv run main.py
 ```
 

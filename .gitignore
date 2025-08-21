@@ -2,3 +2,5 @@ node_modules
 *.ini
 *-lock.json
 .env
+.venv
+__pycache__
